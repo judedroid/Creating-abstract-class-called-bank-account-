@@ -1,0 +1,96 @@
+MustInherit Class BankAccount
+    Protected accountNumber As String
+    Protected balance As Decimal
+
+    ' Constructor to initialize account number and balance
+    Public Sub New(accountNumber As String, balance As Decimal)
+        Me.accountNumber = accountNumber
+        Me.balance = balance
+    End Sub
+
+    ' Abstract methods to be implemented by subclasses
+    Public MustOverride Sub Deposit(amount As Decimal)
+    Public MustOverride Sub Withdraw(amount As Decimal)
+    Public MustOverride Function GetBalance() As Decimal
+End Class
+
+' Savings Account class that inherits from BankAccount
+Class SavingsAccount
+    Inherits BankAccount
+
+    ' Constructor for SavingsAccount
+    Public Sub New(accountNumber As String, balance As Decimal)
+        MyBase.New(accountNumber, balance)
+    End Sub
+
+    ' Add amount to balance
+    Public Overrides Sub Deposit(amount As Decimal)
+        balance += amount
+        Console.WriteLine(amount & " deposited to Savings Account.")
+    End Sub
+
+    ' Withdraw amount if sufficient funds
+    Public Overrides Sub Withdraw(amount As Decimal)
+        If amount > balance Then
+            Console.WriteLine("Insufficient funds in Savings Account!")
+        Else
+            balance -= amount
+            Console.WriteLine(amount & " withdrawn from Savings Account.")
+        End If
+    End Sub
+
+    ' Return the current balance
+    Public Overrides Function GetBalance() As Decimal
+        Return balance
+    End Function
+End Class
+
+' Checking Account class that inherits from BankAccount
+Class CheckingAccount
+    Inherits BankAccount
+    Private overdraftLimit As Decimal
+
+    ' Constructor for CheckingAccount with optional overdraft limit
+    Public Sub New(accountNumber As String, balance As Decimal, Optional overdraftLimit As Decimal = 500)
+        MyBase.New(accountNumber, balance)
+        Me.overdraftLimit = overdraftLimit
+    End Sub
+
+    ' Add amount to balance
+    Public Overrides Sub Deposit(amount As Decimal)
+        balance += amount
+        Console.WriteLine(amount & " deposited to Checking Account.")
+    End Sub
+
+    ' Allow withdrawal within overdraft limit
+    Public Overrides Sub Withdraw(amount As Decimal)
+        If amount > (balance + overdraftLimit) Then
+            Console.WriteLine("Overdraft limit exceeded in Checking Account!")
+        Else
+            balance -= amount
+            Console.WriteLine(amount & " withdrawn from Checking Account.")
+        End If
+    End Sub
+
+    ' Return the current balance
+    Public Overrides Function GetBalance() As Decimal
+        Return balance
+    End Function
+End Class
+
+' Main module for testing accounts
+Module Module1
+    Sub Main()
+        ' Create and test a Savings Account
+        Dim savings As New SavingsAccount("SA12345", 1000)
+        savings.Deposit(200)
+        savings.Withdraw(500)
+        Console.WriteLine("Savings Account Balance: " & savings.GetBalance())
+
+        ' Create and test a Checking Account
+        Dim checking As New CheckingAccount("CA54321", 500)
+        checking.Deposit(300)
+        checking.Withdraw(900)
+        Console.WriteLine("Checking Account Balance: " & checking.GetBalance())
+    End Sub
+End Module
